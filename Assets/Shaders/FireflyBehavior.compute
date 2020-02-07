@@ -17,6 +17,7 @@ RWStructuredBuffer<Firefly> FireflyBuffer;
 
 float2 inputPos;
 float deltaTime;
+float time;
 int randomSeed;
 float stepWidth, spread;
 float noiseFrequency, noiseOffset;
@@ -58,9 +59,10 @@ void PreSnycInit(uint id : SV_DispatchThreadID)
 void PreSnycUpdate(uint id : SV_DispatchThreadID) 
 {
     float3 p = FireflyBuffer[id.x].pos; // origin position 
+    float3 seed = abs(p)+ float3(time, time, time); // prevent 0 velocity which will stuck particles
     // divergence-free noise field
-    float4 sn1 = snoise(p * noiseFrequency);
-    float4 sn2 = snoise(noiseOffset - p * noiseFrequency);
+    float4 sn1 = snoise(seed * noiseFrequency);
+    float4 sn2 = snoise(noiseOffset - seed * noiseFrequency);
     // change speed
     float3 randForce = normalize(cross(sn1.xyz, sn2.xyz)) * stepWidth;
     float3 dir = float3(inputPos, p.z) - p;
@@ -87,8 +89,5 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
 
     // update brightness & synchronize feature?
     float b = FireflyBuffer[id.x].brightness;
-    //while (b < 1)
-    //{
-    //    FireflyBuffer[id.x].brightness += brightnessStep;
-    //}
+    
 }

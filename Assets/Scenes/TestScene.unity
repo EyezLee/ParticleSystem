@@ -376,7 +376,7 @@ MonoBehaviour:
   randomSeed: 1
   stepWidth: 0.2
   spread: 1
-  noiseFrequency: 1
+  noiseFrequency: 10
   noiseOffset: 2
   brightnessStep: 0.01
   playerInput: {fileID: 1814662793}

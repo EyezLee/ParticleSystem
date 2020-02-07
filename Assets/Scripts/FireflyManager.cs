@@ -62,6 +62,7 @@ public class FireflyManager : MonoBehaviour
         var updateKernel = fireflyCompute.FindKernel("PreSnycUpdate");
         // pass variables to compute shader
         fireflyCompute.SetFloat("deltaTime", Time.deltaTime);
+        fireflyCompute.SetFloat("time", Time.time);
         fireflyCompute.SetBuffer(updateKernel, "FireflyBuffer", fireflyBuffer);
         fireflyCompute.SetFloat("stepWidth", stepWidth);
         fireflyCompute.SetFloat("spread", spread);

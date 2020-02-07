@@ -2,6 +2,7 @@
 #pragma kernel PreSnycUpdate
 
 #include "UnityCG.cginc"
+#include "SimplexNoise3D.cginc"
 
 struct Firefly
 {
@@ -17,12 +18,17 @@ RWStructuredBuffer<Firefly> FireflyBuffer;
 float2 inputPos;
 float deltaTime;
 int randomSeed;
+float stepWidth, spread;
+float noiseFrequency, noiseOffset;
+
+// boundry setting
+int4 boundBox;
 
 // randomization from Keijiro
 float Random(float u, float v)
 {
     float f = dot(float2(12.9898, 78.233), float2(u, v)) + randomSeed;
-    return frac(43758.5453 * sin(f));
+    return frac(43758.5453 * sin(f)) - 0.5;
 }
 
 float3 RandomPoint(float id)
@@ -33,22 +39,28 @@ float3 RandomPoint(float id)
     return float3(u, z, l);
 }
 
-[numthreads(64, 1, 1)]
+[numthreads(256, 1, 1)]
 void PreSnycInit(uint id : SV_DispatchThreadID)
 {
-    // init position
-    FireflyBuffer[id.x].pos = RandomPoint(id);
-    FireflyBuffer[id.x].col = float4(RandomPoint(id + 0.5).x, RandomPoint(id + 0.5).x, RandomPoint(id + 0.5).x, 1);
+     //scale position to fit screen
+    float3 position = RandomPoint((float)id.x);
+    position.x *= (boundBox.y - boundBox.x);
+    position.y *= (boundBox.w - boundBox.z);
+    FireflyBuffer[id.x].pos = position;
+    FireflyBuffer[id.x].col = float4(1, 1, 1, 1);
     FireflyBuffer[id.x].vel = float3(0, 0, 0);
-    FireflyBuffer[id.x].brightness = Random(id, 0.01197);
-    FireflyBuffer[id.x].scale = Random(id, 0.432349);
+    FireflyBuffer[id.x].brightness = 1;
+    FireflyBuffer[id.x].scale = 1;
 }
 
-[numthreads(64, 1, 1)]
+[numthreads(256, 1, 1)]
 void PreSnycUpdate(uint id : SV_DispatchThreadID) 
 {
-    float3 dist = float3(inputPos, 3) - FireflyBuffer[id.x].pos;
-    float3 dir = normalize(dist);
-    FireflyBuffer[id.x].vel += dir;
+    float3 p = FireflyBuffer[id.x].pos; // origin position 
+    // divergence-free noise field
+    float4 sn1 = snoise(p * noiseFrequency);
+    float4 sn2 = snoise(noiseOffset - p * noiseFrequency);
+
+    FireflyBuffer[id.x].vel = normalize(cross(sn1.xyz, sn2.xyz)) * stepWidth;
     FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel * deltaTime;
 }

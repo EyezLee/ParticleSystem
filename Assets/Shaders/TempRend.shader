@@ -39,7 +39,7 @@
 			FB_INPUT o = (FB_INPUT)0;
 
 			// Color
-			o.color = FireflyBuffer[instance_id].col;
+			o.color = FireflyBuffer[instance_id].col * 1;//FireflyBuffer[instance_id].brightness;
 
 			// Position
 			o.position = UnityObjectToClipPos(float4(FireflyBuffer[instance_id].pos, 1.0f));

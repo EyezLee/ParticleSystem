@@ -13,11 +13,25 @@ public class FireflyManager : MonoBehaviour
         float scale;
     };
 
-    public int fireflyCount = 1000;
+    // boundry setting 
+    int[] boundBox = { 0, 8, 0, 8}; // minX maxX minY maxY
+
+    public int fireflyCount = 10000;
     [SerializeField]
     ComputeShader fireflyCompute;
     [SerializeField]
-    int randomSeed = 1;
+    int randomSeed = 4;
+    [SerializeField]
+    float stepWidth = 0.1f;
+    [SerializeField]
+    float spread = 1;
+    [SerializeField]
+    float noiseFrequency;
+    [SerializeField]
+    float noiseOffset = 0.1f;
+
+    [SerializeField]
+    Transform playerInput;
 
     ComputeBuffer fireflyBuffer;
     int kThreadCount = 64;
@@ -34,6 +48,7 @@ public class FireflyManager : MonoBehaviour
         // pass variables to compute shader
         fireflyCompute.SetInt("randomSeed", randomSeed);
         fireflyCompute.SetBuffer(initKernel, "FireflyBuffer", fireflyBuffer);
+        fireflyCompute.SetInts("boundBox", boundBox);
         // execute kernel
         fireflyCompute.Dispatch(initKernel, threadGroupCount, 1, 1);
     }
@@ -45,12 +60,13 @@ public class FireflyManager : MonoBehaviour
         // pass variables to compute shader
         fireflyCompute.SetFloat("deltaTime", Time.deltaTime);
         fireflyCompute.SetBuffer(updateKernel, "FireflyBuffer", fireflyBuffer);
+        fireflyCompute.SetFloat("stepWidth", stepWidth);
+        fireflyCompute.SetFloat("spread", spread);
+        fireflyCompute.SetFloat("noiseFrequency", noiseFrequency);
+        fireflyCompute.SetFloat("noiseOffset", noiseOffset);
         // get cursor position
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        Physics.Raycast(ray, out hit);
-        float[] mousePos = { hit.point.x, hit.point.y };
-        fireflyCompute.SetFloats("inputPos", mousePos);
+        float[] inputPos = { playerInput.position.x, playerInput.position.y};
+        fireflyCompute.SetFloats("inputPos", inputPos);
         fireflyCompute.Dispatch(updateKernel, threadGroupCount, 1, 1);
     }
 
@@ -64,13 +80,11 @@ public class FireflyManager : MonoBehaviour
         InitFirefly();
         PassDataToRend();
     }
-
     private void Update()
     {
         UpdateFirefly();
         PassDataToRend();
     }
-
     private void OnDestroy()
     {
         fireflyBuffer.Release();

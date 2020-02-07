@@ -14,7 +14,8 @@ public class FireflyRender : MonoBehaviour
 
     void GetBuffer()
     {
-        fireflyBuffer = fireflyManager.PassDataToRend();
+        if(fireflyManager != null)
+            fireflyBuffer = fireflyManager.PassDataToRend();
         rendMat.SetBuffer("FireflyBuffer", fireflyBuffer);
     }
 
@@ -26,7 +27,7 @@ public class FireflyRender : MonoBehaviour
     private void OnRenderObject()
     {
         rendMat.SetPass(0);
-        GetBuffer();
-        Graphics.DrawProceduralNow(MeshTopology.Points, 1, fireflyManager.fireflyCount);
+        if (fireflyManager != null)
+            Graphics.DrawProceduralNow(MeshTopology.Points, 1, fireflyManager.fireflyCount);
     }
 }

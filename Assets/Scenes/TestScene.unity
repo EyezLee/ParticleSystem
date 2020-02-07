@@ -294,7 +294,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 0.21484515, g: 0.38899395, b: 0.6415094, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -370,13 +370,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41788521ab44814b8b5829960b47833, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireflyCount: 1000
+  boundBox: 00000000080000000000000008000000
+  fireflyCount: 10000
   fireflyCompute: {fileID: 7200000, guid: 77173ea66d0c2a542a3921a741a4bb41, type: 3}
   randomSeed: 1
   stepWidth: 0.1
   spread: 1
-  noiseFrequency: 1
-  noiseOffset: 34312310
+  noiseFrequency: 5
+  noiseOffset: 2
+  brightnessStep: 0.01
   playerInput: {fileID: 1814662793}
 --- !u!4 &667314313
 Transform:

@@ -14,6 +14,7 @@ public class FireflyManager : MonoBehaviour
     };
 
     // boundry setting 
+    [SerializeField]
     int[] boundBox = { 0, 8, 0, 8}; // minX maxX minY maxY
 
     public int fireflyCount = 10000;
@@ -29,6 +30,8 @@ public class FireflyManager : MonoBehaviour
     float noiseFrequency;
     [SerializeField]
     float noiseOffset = 0.1f;
+    [SerializeField]
+    float brightnessStep = 0.1f;
 
     [SerializeField]
     Transform playerInput;
@@ -64,6 +67,7 @@ public class FireflyManager : MonoBehaviour
         fireflyCompute.SetFloat("spread", spread);
         fireflyCompute.SetFloat("noiseFrequency", noiseFrequency);
         fireflyCompute.SetFloat("noiseOffset", noiseOffset);
+        fireflyCompute.SetFloat("brightnessStep", brightnessStep);
         // get cursor position
         float[] inputPos = { playerInput.position.x, playerInput.position.y};
         fireflyCompute.SetFloats("inputPos", inputPos);

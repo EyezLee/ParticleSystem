@@ -370,13 +370,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41788521ab44814b8b5829960b47833, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundBox: 00000000080000000000000008000000
+  boundBox: fcffffff04000000fcffffff04000000
   fireflyCount: 10000
   fireflyCompute: {fileID: 7200000, guid: 77173ea66d0c2a542a3921a741a4bb41, type: 3}
   randomSeed: 1
-  stepWidth: 0.1
+  stepWidth: 0.2
   spread: 1
-  noiseFrequency: 5
+  noiseFrequency: 1
   noiseOffset: 2
   brightnessStep: 0.01
   playerInput: {fileID: 1814662793}

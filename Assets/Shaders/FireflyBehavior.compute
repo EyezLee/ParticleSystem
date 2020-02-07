@@ -62,7 +62,9 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
     float4 sn1 = snoise(p * noiseFrequency);
     float4 sn2 = snoise(noiseOffset - p * noiseFrequency);
     // change speed
-    FireflyBuffer[id.x].vel = normalize(cross(sn1.xyz, sn2.xyz)) * stepWidth;
+    float3 randForce = normalize(cross(sn1.xyz, sn2.xyz)) * stepWidth;
+    float3 dir = float3(inputPos, p.z) - p;
+    FireflyBuffer[id.x].vel = 1 / length(dir) * randForce + randForce;
     // set boundry
     if (p.x > boundBox.x && p.x < boundBox.y && p.y > boundBox.z && p.y < boundBox.w)
         FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel * deltaTime;
@@ -83,10 +85,10 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
         FireflyBuffer[id.x].pos.y -= stepWidth * 2;
     }
 
-    // update brightness
+    // update brightness & synchronize feature?
     float b = FireflyBuffer[id.x].brightness;
-    if (b < 0.5)
-        FireflyBuffer[id.x].brightness = lerp(0, 1, b);
-    else
-        FireflyBuffer[id.x].brightness = lerp(1, 0, b);
+    //while (b < 1)
+    //{
+    //    FireflyBuffer[id.x].brightness += brightnessStep;
+    //}
 }

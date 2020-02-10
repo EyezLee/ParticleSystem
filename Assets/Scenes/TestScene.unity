@@ -294,7 +294,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.21484515, g: 0.38899395, b: 0.6415094, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -376,9 +376,9 @@ MonoBehaviour:
   randomSeed: 1
   stepWidth: 0.2
   spread: 1
-  noiseFrequency: 10
+  noiseFrequency: 0.1
   noiseOffset: 2
-  brightnessStep: 0.01
+  shineSpeed: 0.001
   playerInput: {fileID: 1814662793}
 --- !u!4 &667314313
 Transform:

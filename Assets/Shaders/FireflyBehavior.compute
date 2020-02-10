@@ -9,20 +9,18 @@ struct Firefly
     float3 pos;
     float3 vel;
     float4 col;
-    float brightness;
+    float lifeOffset;
     float scale;
 };
 
-RWStructuredBuffer<Firefly> FireflyBuffer;
-StructuredBuffer<float> brightnessRO; // for initialize brightness offset
-
+RWStructuredBuffer<Firefly> FireflyBuffer;\
 float2 inputPos;
 float deltaTime;
 float time;
 int randomSeed;
 float stepWidth, spread;
 float noiseFrequency, noiseOffset;
-float brightnessStep;
+float shineSpeed;
 
 // boundry setting
 int4 boundBox;
@@ -52,7 +50,7 @@ void PreSnycInit(uint id : SV_DispatchThreadID)
     FireflyBuffer[id.x].pos = position;
     FireflyBuffer[id.x].col = float4(1, 1, 1, 1);
     FireflyBuffer[id.x].vel = float3(0, 0, 0);
-    FireflyBuffer[id.x].brightness = Random(id.x, id.x + 0.1) + 0.5;
+    FireflyBuffer[id.x].lifeOffset = (Random(id.x, id.x + 0.1) + 0.5) * 10; // shift life
     FireflyBuffer[id.x].scale = 1;
 }
 
@@ -79,10 +77,4 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
         FireflyBuffer[id.x].pos.y += stepWidth * 2;
     else if (p.y >= boundBox.w)
         FireflyBuffer[id.x].pos.y -= stepWidth * 2;
-
-    // update brightness & synchronize feature?
-    float b = FireflyBuffer[id.x].brightness;
-    //float coeff = fmod(time, 2); // Coefficient
-    //FireflyBuffer[id.x].brightness = - pow(coeff - 1, 2) + 1;
-    FireflyBuffer[id.x].brightness = sin((time)  * 0.5) / 2 + 0.5;
 }

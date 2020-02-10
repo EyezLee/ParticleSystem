@@ -20,7 +20,7 @@
 			float3 pos;
 			float3 vel;
 			float4 col;
-			float brightness;
+			float lifeOffset;
 			float scale;
 		};
 
@@ -39,7 +39,9 @@
 			FB_INPUT o = (FB_INPUT)0;
 
 			// Color
-			o.color = float4(FireflyBuffer[instance_id].col.rgb * FireflyBuffer[instance_id].brightness, 1.0);
+			float life = FireflyBuffer[instance_id].lifeOffset;
+			float brightness = sin(life + _Time.y) / 2 + 0.5;
+			o.color = float4(FireflyBuffer[instance_id].col.rgb * brightness, 1.0);
 
 			// Position
 			o.position = UnityObjectToClipPos(float4(FireflyBuffer[instance_id].pos, 1.0f));

@@ -24,7 +24,6 @@ public class FireflyManager : MonoBehaviour
     [SerializeField] float spread = 1;
     [SerializeField] float noiseFrequency;
     [SerializeField] float noiseOffset = 0.1f;
-    [SerializeField] float shineSpeed = 0.1f;
 
     [SerializeField] Transform playerInput;
 
@@ -62,7 +61,6 @@ public class FireflyManager : MonoBehaviour
         fireflyCompute.SetFloat("spread", spread);
         fireflyCompute.SetFloat("noiseFrequency", noiseFrequency);
         fireflyCompute.SetFloat("noiseOffset", noiseOffset);
-        fireflyCompute.SetFloat("shineSpeed", shineSpeed);
         // get cursor position
         float[] inputPos = { playerInput.position.x, playerInput.position.y};
         fireflyCompute.SetFloats("inputPos", inputPos);

@@ -50,7 +50,7 @@ void PreSnycInit(uint id : SV_DispatchThreadID)
     FireflyBuffer[id.x].col = float4(1, 1, 1, 1);
     FireflyBuffer[id.x].vel = float3(0, 0, 0);
     FireflyBuffer[id.x].lifeOffset = (Random(id.x, id.x + 0.1) + 0.5) * 10; // shift life
-    FireflyBuffer[id.x].scale = 1;
+    FireflyBuffer[id.x].scale = max(0.1, (Random(id.x + 123.456, id.x +45.233) + 0.5) * 0.2);
 }
 
 [numthreads(256, 1, 1)]
@@ -68,7 +68,7 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
     // set boundry
     float safeStep = stepWidth * 2;
     if (p.x > boundBox.x && p.x < boundBox.y && p.y > boundBox.z && p.y < boundBox.w)
-        FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel * deltaTime;
+        FireflyBuffer[id.x].pos += float3(FireflyBuffer[id.x].vel.xy, 0) * deltaTime;
     else if (p.x <= boundBox.x)
         FireflyBuffer[id.x].pos.x += safeStep;
     else if (p.x >= boundBox.y)      

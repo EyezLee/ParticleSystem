@@ -63,7 +63,8 @@
 			float3 worldPos = FireflyBuffer[instance_id].pos;
 
 			// vertices
-			o.position = UnityObjectToClipPos(float4(v.vertex * 0.1 + worldPos, 1));
+			o.position = UnityObjectToClipPos(
+				float4(v.vertex * FireflyBuffer[instance_id].scale + worldPos, 1));
 			return o;
 		}
 

@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class FireflyRender : MonoBehaviour
 {
-    [SerializeField]
-    Material rendMat;
+    [SerializeField] Material rendMat;
+    [SerializeField] Texture fireflyTex;
+    [SerializeField] FireflyManager fireflyManager;
+    [SerializeField] Mesh fireflyMesh;
 
-    [SerializeField]
-    FireflyManager fireflyManager;
+    [SerializeField] float shineSpeed;
 
     ComputeBuffer fireflyBuffer;
+    ComputeBuffer drawArgsBuffer;
 
-    void GetBuffer()
+    void GetFireflyBuffer()
     {
         if(fireflyManager != null)
             fireflyBuffer = fireflyManager.PassDataToRend();
@@ -21,13 +23,37 @@ public class FireflyRender : MonoBehaviour
 
     private void Start()
     {
-        GetBuffer();
+        // initialize the indirect draw args buffer
+        drawArgsBuffer = new ComputeBuffer(1, 5 * sizeof(uint), ComputeBufferType.IndirectArguments);
+        drawArgsBuffer.SetData(new uint[5]
+        {
+            fireflyMesh.GetIndexCount(0), (uint)fireflyManager.fireflyCount, 0, 0, 0
+        });
+
+        rendMat.SetTexture("_MainTex", fireflyTex);
+        
+        GetFireflyBuffer();
     }
 
-    private void OnRenderObject()
+    //private void OnRenderObject()
+    //{
+    //    rendMat.SetPass(0);
+    //    if (fireflyManager != null)
+    //        Graphics.DrawMeshNow(fireflyMesh, Vector3.zero, Quaternion.identity);
+    //}
+
+    private void Update()
     {
-        rendMat.SetPass(0);
-        if (fireflyManager != null)
-            Graphics.DrawProceduralNow(MeshTopology.Points, 1, fireflyManager.fireflyCount);
+        rendMat.SetFloat("_shineSpeed", shineSpeed);
+
+        Graphics.DrawMeshInstancedIndirect(
+            fireflyMesh, 0, rendMat,
+            new Bounds(Vector3.zero, new Vector3(100.0f, 100.0f, 100.0f)), drawArgsBuffer
+            );    
+    }
+
+    private void OnDestroy()
+    {
+        if (drawArgsBuffer != null) drawArgsBuffer.Release();
     }
 }

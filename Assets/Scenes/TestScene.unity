@@ -243,7 +243,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rendMat: {fileID: 2100000, guid: eead9c4eeb876fc468a1f854cdf60821, type: 2}
+  fireflyTex: {fileID: 2800000, guid: 1b4aa44d9c6571242b7537ae62213f06, type: 3}
   fireflyManager: {fileID: 667314312}
+  fireflyMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  shineSpeed: 7
 --- !u!4 &373690786
 Transform:
   m_ObjectHideFlags: 0
@@ -371,14 +374,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boundBox: fcffffff04000000fcffffff04000000
-  fireflyCount: 10000
+  fireflyCount: 5000
   fireflyCompute: {fileID: 7200000, guid: 77173ea66d0c2a542a3921a741a4bb41, type: 3}
   randomSeed: 1
   stepWidth: 0.2
   spread: 1
   noiseFrequency: 0.1
   noiseOffset: 2
-  shineSpeed: 0.001
+  shineSpeed: 100
   playerInput: {fileID: 1814662793}
 --- !u!4 &667314313
 Transform:

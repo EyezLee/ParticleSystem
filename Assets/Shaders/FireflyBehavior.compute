@@ -13,14 +13,13 @@ struct Firefly
     float scale;
 };
 
-RWStructuredBuffer<Firefly> FireflyBuffer;\
+RWStructuredBuffer<Firefly> FireflyBuffer;
 float2 inputPos;
 float deltaTime;
 float time;
 int randomSeed;
 float stepWidth, spread;
 float noiseFrequency, noiseOffset;
-float shineSpeed;
 
 // boundry setting
 int4 boundBox;
@@ -67,14 +66,15 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
     float3 dir = float3(inputPos, p.z) - p;
     FireflyBuffer[id.x].vel = 1 / length(dir) * randForce + randForce;
     // set boundry
+    float safeStep = stepWidth * 2;
     if (p.x > boundBox.x && p.x < boundBox.y && p.y > boundBox.z && p.y < boundBox.w)
         FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel * deltaTime;
     else if (p.x <= boundBox.x)
-        FireflyBuffer[id.x].pos.x += stepWidth * 2;
-    else if (p.x >= boundBox.y)
-        FireflyBuffer[id.x].pos.x -= stepWidth * 2;
-    else if (p.y <= boundBox.z)
-        FireflyBuffer[id.x].pos.y += stepWidth * 2;
-    else if (p.y >= boundBox.w)
-        FireflyBuffer[id.x].pos.y -= stepWidth * 2;
+        FireflyBuffer[id.x].pos.x += safeStep;
+    else if (p.x >= boundBox.y)      
+        FireflyBuffer[id.x].pos.x -= safeStep;
+    else if (p.y <= boundBox.z)      
+        FireflyBuffer[id.x].pos.y += safeStep;
+    else if (p.y >= boundBox.w)      
+        FireflyBuffer[id.x].pos.y -= safeStep;
 }

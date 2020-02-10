@@ -15,28 +15,22 @@ public class FireflyManager : MonoBehaviour
 
     // boundry setting 
     [SerializeField]
-    int[] boundBox = { 0, 8, 0, 8}; // minX maxX minY maxY
+    int[] boundBox = { 0, 8, 0, 8 }; // minX maxX minY maxY
 
     public int fireflyCount = 10000;
-    [SerializeField]
-    ComputeShader fireflyCompute;
-    [SerializeField]
-    int randomSeed = 4;
-    [SerializeField]
-    float stepWidth = 0.1f;
-    [SerializeField]
-    float spread = 1;
-    [SerializeField]
-    float noiseFrequency;
-    [SerializeField]
-    float noiseOffset = 0.1f;
-    [SerializeField]
-    float shineSpeed = 0.1f;
+    [SerializeField] ComputeShader fireflyCompute;
+    [SerializeField] int randomSeed = 4;
+    [SerializeField] float stepWidth = 0.1f;
+    [SerializeField] float spread = 1;
+    [SerializeField] float noiseFrequency;
+    [SerializeField] float noiseOffset = 0.1f;
+    [SerializeField] float shineSpeed = 0.1f;
 
-    [SerializeField]
-    Transform playerInput;
+    [SerializeField] Transform playerInput;
 
     ComputeBuffer fireflyBuffer;
+    uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
+   
     int kThreadCount = 64;
     int threadGroupCount { get{ return Mathf.CeilToInt((float)fireflyCount / kThreadCount); } }
     int bufferStride = 48; // 4 * 12

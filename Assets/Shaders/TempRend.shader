@@ -1,10 +1,14 @@
 ﻿Shader "Unlit/TempRend"
 {
+	Properties{
+		_MainTex("Texture", 2D) = "white" {}
+	}
 	SubShader{
 		 Pass {
-		 Tags{ "RenderType" = "Opaque" }
+		 Tags{ "RenderType" = "Transparent" }
 		 LOD 200
-		 Blend SrcAlpha one
+		 ZWrite Off
+		 Blend SrcAlpha OneMinusSrcAlpha
 
 		 CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
@@ -24,34 +28,49 @@
 			float scale;
 		};
 
+		struct appData
+		{
+			float3 vertex : POSITION;
+			float2 uv : TEXCOORD0;
+		};
+
 		struct FB_INPUT {
 			float4 position : SV_POSITION;
 			float4 color : COLOR;
 			float brightness : BRIGHTNESS;
 			float3 vel : VEL;
 			float scale : SCALE;
+			float2 uv : TEXCOORD0;
 		};
 
 		StructuredBuffer<Firefly> FireflyBuffer;
+		sampler2D _MainTex;
+		float4 _MainTex_ST;
 
-		FB_INPUT vert(uint vertex_id : SV_VertexID, uint instance_id : SV_InstanceID)
+		float _shineSpeed;
+
+		FB_INPUT vert(uint vertex_id : SV_VertexID, uint instance_id : SV_InstanceID, appData v)
 		{
 			FB_INPUT o = (FB_INPUT)0;
 
 			// Color
 			float life = FireflyBuffer[instance_id].lifeOffset;
-			float brightness = sin(life + _Time.y) / 2 + 0.5;
-			o.color = float4(FireflyBuffer[instance_id].col.rgb * brightness, 1.0);
+			float brightness = sin((life + _Time.y) * _shineSpeed) / 2 + 0.5;
+			o.color = float4(FireflyBuffer[instance_id].col * brightness);
+			o.uv = TRANSFORM_TEX(v.uv, _MainTex); // uv
 
 			// Position
-			o.position = UnityObjectToClipPos(float4(FireflyBuffer[instance_id].pos, 1.0f));
+			float3 worldPos = FireflyBuffer[instance_id].pos;
 
+			// vertices
+			o.position = UnityObjectToClipPos(float4(v.vertex * 0.1 + worldPos, 1));
 			return o;
 		}
 
-		float4 frag(FB_INPUT i) : COLOR
+		fixed4 frag(FB_INPUT i) : COLOR
 		{
-			return i.color;
+			fixed4 col = tex2D(_MainTex, i.uv) * i.color;
+			return col;
 		}
 
 		ENDCG

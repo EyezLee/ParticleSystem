@@ -2,6 +2,7 @@
 {
 	Properties{
 		_MainTex("Texture", 2D) = "white" {}
+		//_syncPace("SyncPace", Range(0, 0.5)) = 0.5
 	}
 	SubShader{
 		 Pass {
@@ -71,7 +72,7 @@
 		fixed4 frag(FB_INPUT i) : COLOR
 		{
 			fixed4 col = tex2D(_MainTex, i.uv) * i.color;
-			return col;
+			return fixed4(1, 1, 1, 1);
 		}
 
 		ENDCG

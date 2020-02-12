@@ -9,6 +9,7 @@ public class FireflyRender : MonoBehaviour
     [SerializeField] FireflyManager fireflyManager;
     [SerializeField] Mesh fireflyMesh;
 
+    // firefly effect properties
     [SerializeField] float shineSpeed;
 
     ComputeBuffer fireflyBuffer;
@@ -34,13 +35,6 @@ public class FireflyRender : MonoBehaviour
         
         GetFireflyBuffer();
     }
-
-    //private void OnRenderObject()
-    //{
-    //    rendMat.SetPass(0);
-    //    if (fireflyManager != null)
-    //        Graphics.DrawMeshNow(fireflyMesh, Vector3.zero, Quaternion.identity);
-    //}
 
     private void Update()
     {

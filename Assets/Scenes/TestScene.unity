@@ -338,7 +338,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 485003477}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.14, z: -4.46}
+  m_LocalPosition: {x: 0, y: 0.14, z: -2.82}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41788521ab44814b8b5829960b47833, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundBox: fcffffff04000000fcffffff04000000
+  boundBox: faffffff06000000fcffffff04000000
   fireflyCount: 5000
   fireflyCompute: {fileID: 7200000, guid: 77173ea66d0c2a542a3921a741a4bb41, type: 3}
   randomSeed: 1
@@ -381,7 +381,6 @@ MonoBehaviour:
   spread: 1
   noiseFrequency: 0.1
   noiseOffset: 2
-  shineSpeed: 100
   playerInput: {fileID: 1814662793}
 --- !u!4 &667314313
 Transform:
@@ -410,12 +409,12 @@ GameObject:
   - component: {fileID: 1814662791}
   - component: {fileID: 1814662790}
   m_Layer: 0
-  m_Name: input
+  m_Name: PlayerInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &1814662790
 SphereCollider:
   m_ObjectHideFlags: 0

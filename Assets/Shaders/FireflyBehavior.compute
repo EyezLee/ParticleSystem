@@ -61,12 +61,19 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
     // divergence-free noise field
     float4 sn1 = snoise(seed * noiseFrequency);
     float4 sn2 = snoise(noiseOffset - seed * noiseFrequency);
-    // change speed
     float3 randForce = normalize(cross(sn1.xyz, sn2.xyz)) * stepWidth;
+    // interaction force
     float3 dir = float3(inputPos, p.z) - p;
-    FireflyBuffer[id.x].vel = 1 / length(dir) * randForce + randForce;
+    // noise force with influced by player
+    float3 randVel = 1 / length(dir) * randForce + randForce;
+    // main trail -- sin wave-ish
+    float3 velXZ = normalize(cross(float3(sin(time), 0, cos(time)), float3(0, 1, 0)));
+    float3 velY = float3(0, sin(time * 5), 0);
+    // calculate velocity
+    //FireflyBuffer[id.x].vel = 1 / length(dir) * randForce + randForce;
+    FireflyBuffer[id.x].vel = velXZ + velY + randVel;
     // set boundry
-    float safeStep = stepWidth * 2;
+    /*float safeStep = stepWidth * 2;
     if (p.x > boundBox.x && p.x < boundBox.y && p.y > boundBox.z && p.y < boundBox.w)
         FireflyBuffer[id.x].pos += float3(FireflyBuffer[id.x].vel.xy, 0) * deltaTime;
     else if (p.x <= boundBox.x)
@@ -77,4 +84,7 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
         FireflyBuffer[id.x].pos.y += safeStep;
     else if (p.y >= boundBox.w)      
         FireflyBuffer[id.x].pos.y -= safeStep;
+        */
+    FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel * deltaTime;
+    // shift blink mode
 }

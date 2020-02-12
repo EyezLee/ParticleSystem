@@ -20,6 +20,7 @@ float time;
 int randomSeed;
 float stepWidth, spread;
 float noiseFrequency, noiseOffset;
+float freq, freqOffset;
 
 // boundry setting
 int4 boundBox;
@@ -56,7 +57,7 @@ void PreSnycInit(uint id : SV_DispatchThreadID)
 [numthreads(256, 1, 1)]
 void PreSnycUpdate(uint id : SV_DispatchThreadID) 
 {
-    float3 p = FireflyBuffer[id.x].pos; // origin position 
+    float3 p = FireflyBuffer[id.x].pos; // origin pos 
     float3 seed = abs(p)+ float3(time, time, time); // prevent 0 velocity which will stuck particles
     // divergence-free noise field
     float4 sn1 = snoise(seed * noiseFrequency);
@@ -67,24 +68,27 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
     // noise force with influced by player
     float3 randVel = 1 / length(dir) * randForce + randForce;
     // main trail -- sin wave-ish
+    //float diverseXZ = (Random(id.x, id.x + 134.45) + 0.5) * 5;
     float3 velXZ = normalize(cross(float3(sin(time), 0, cos(time)), float3(0, 1, 0)));
-    float3 velY = float3(0, sin(time * 5), 0);
+    velXZ.x += normalize(snoise(id)).x;
+   /* velXZ.z /= 1;*/
+    //float diverseY = snoise(id.xyy).y;
+    float3 velY = float3(0, sin(freq * time) * pow(sin(freqOffset * time), 6), 0) * normalize(snoise(p).xyz);
     // calculate velocity
-    //FireflyBuffer[id.x].vel = 1 / length(dir) * randForce + randForce;
-    FireflyBuffer[id.x].vel = velXZ + velY + randVel;
+    FireflyBuffer[id.x].vel = velY + velXZ + randVel;
     // set boundry
-    /*float safeStep = stepWidth * 2;
+    float safeStep = stepWidth * 2;
     if (p.x > boundBox.x && p.x < boundBox.y && p.y > boundBox.z && p.y < boundBox.w)
         FireflyBuffer[id.x].pos += float3(FireflyBuffer[id.x].vel.xy, 0) * deltaTime;
     else if (p.x <= boundBox.x)
-        FireflyBuffer[id.x].pos.x += safeStep;
+        FireflyBuffer[id.x].pos.x += velXZ.x;
     else if (p.x >= boundBox.y)      
-        FireflyBuffer[id.x].pos.x -= safeStep;
+        FireflyBuffer[id.x].pos.x -= velXZ.x;
     else if (p.y <= boundBox.z)      
         FireflyBuffer[id.x].pos.y += safeStep;
     else if (p.y >= boundBox.w)      
         FireflyBuffer[id.x].pos.y -= safeStep;
-        */
-    FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel * deltaTime;
+        
+    FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel * deltaTime * 0;
     // shift blink mode
 }

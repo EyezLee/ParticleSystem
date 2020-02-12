@@ -373,8 +373,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41788521ab44814b8b5829960b47833, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundBox: faffffff06000000fcffffff04000000
-  fireflyCount: 5000
+  boundBox: ffffffff01000000ffffffff01000000
+  fireflyCount: 100
   fireflyCompute: {fileID: 7200000, guid: 77173ea66d0c2a542a3921a741a4bb41, type: 3}
   randomSeed: 1
   stepWidth: 0.2

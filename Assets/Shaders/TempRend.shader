@@ -62,7 +62,13 @@
 
 			// Position
 			float3 worldPos = FireflyBuffer[instance_id].pos;
-
+			/*float3 initPos = FireflyBuffer[instance_id].pos;
+			float3 velY = sin(_Time.y + initPos);
+			float3 totalVel = FireflyBuffer[instance_id].vel + velY;
+			float3 worldPos = initPos;
+			worldPos += totalVel * unity_DeltaTime;
+			*/
+			
 			// vertices
 			o.position = UnityObjectToClipPos(
 				float4(v.vertex * FireflyBuffer[instance_id].scale + worldPos, 1));
@@ -72,7 +78,7 @@
 		fixed4 frag(FB_INPUT i) : COLOR
 		{
 			fixed4 col = tex2D(_MainTex, i.uv) * i.color;
-			return fixed4(1, 1, 1, 1);
+			return col;
 		}
 
 		ENDCG

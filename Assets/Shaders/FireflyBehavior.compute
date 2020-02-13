@@ -9,7 +9,7 @@ struct Firefly
     float3 pos;
     float3 vel;
     float4 col;
-    float lifeOffset;
+    float phase;
     float scale;
 };
 
@@ -50,7 +50,7 @@ void PreSnycInit(uint id : SV_DispatchThreadID)
     FireflyBuffer[id.x].pos = position;
     FireflyBuffer[id.x].col = float4(1, 1, 1, 1);
     FireflyBuffer[id.x].vel = float3(0, 0, 0);
-    FireflyBuffer[id.x].lifeOffset = (Random(id.x, id.x + 0.1) + 0.5) * 10; // shift life
+    FireflyBuffer[id.x].phase = (Random(id.x, id.x + 0.1) + 0.5) * 10; // shift life
     FireflyBuffer[id.x].scale = max(0.1, (Random(id.x + 123.456, id.x +45.233) + 0.5) * 0.2);
 }
 
@@ -71,13 +71,12 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
     //float diverseXZ = (Random(id.x, id.x + 134.45) + 0.5) * 5;
     float3 velXZ = normalize(cross(float3(sin(time), 0, cos(time)), float3(0, 1, 0)));
     velXZ.x += normalize(snoise(id)).x;
-   /* velXZ.z /= 1;*/
     //float diverseY = snoise(id.xyy).y;
     float3 velY = float3(0, sin(freq * time) * pow(sin(freqOffset * time), 6), 0) * normalize(snoise(p).xyz);
     // calculate velocity
     FireflyBuffer[id.x].vel = velY + velXZ + randVel;
     // set boundry
-    float safeStep = stepWidth * 2;
+    /*float safeStep = stepWidth * 2;
     if (p.x > boundBox.x && p.x < boundBox.y && p.y > boundBox.z && p.y < boundBox.w)
         FireflyBuffer[id.x].pos += float3(FireflyBuffer[id.x].vel.xy, 0) * deltaTime;
     else if (p.x <= boundBox.x)
@@ -87,8 +86,6 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
     else if (p.y <= boundBox.z)      
         FireflyBuffer[id.x].pos.y += safeStep;
     else if (p.y >= boundBox.w)      
-        FireflyBuffer[id.x].pos.y -= safeStep;
-        
-    FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel * deltaTime * 0;
-    // shift blink mode
+        FireflyBuffer[id.x].pos.y -= safeStep;*/
+    FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel;
 }

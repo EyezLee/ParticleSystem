@@ -25,7 +25,7 @@
 			float3 pos;
 			float3 vel;
 			float4 col;
-			float lifeOffset;
+			float phase;
 			float scale;
 		};
 
@@ -55,19 +55,17 @@
 			FB_INPUT o = (FB_INPUT)0;
 
 			// Color
-			float life = FireflyBuffer[instance_id].lifeOffset;
-			float brightness = sin((life + _Time.y) * _shineSpeed) / 2 + 0.5;
-			o.color = float4(FireflyBuffer[instance_id].col * brightness);
+			float phase = FireflyBuffer[instance_id].phase;
+
+			// brightness control
+			float brightness = sin((phase + _Time) * _shineSpeed) / 2 + 0.5;
+			
+			//o.color = float4(FireflyBuffer[instance_id].col * brightness);
+			o.color = float4(brightness, brightness, brightness, 1);
 			o.uv = TRANSFORM_TEX(v.uv, _MainTex); // uv
 
 			// Position
 			float3 worldPos = FireflyBuffer[instance_id].pos;
-			/*float3 initPos = FireflyBuffer[instance_id].pos;
-			float3 velY = sin(_Time.y + initPos);
-			float3 totalVel = FireflyBuffer[instance_id].vel + velY;
-			float3 worldPos = initPos;
-			worldPos += totalVel * unity_DeltaTime;
-			*/
 			
 			// vertices
 			o.position = UnityObjectToClipPos(

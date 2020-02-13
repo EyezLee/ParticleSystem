@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct Firefly
+{
+    public Vector3 pos;
+    public Vector3 vol;
+    public Vector4 col;
+    public float phase;
+    public float scale;
+};
 public class FireflyManager : MonoBehaviour
 {
-    struct Firefly
-    {
-        Vector3 pos;
-        Vector3 vol;
-        Vector4 col;
-        float lifeOffset;
-        float scale;
-    };
-
     // boundry setting 
     [SerializeField]
     int[] boundBox = { 0, 8, 0, 8 }; // minX maxX minY maxY

@@ -247,6 +247,8 @@ MonoBehaviour:
   fireflyManager: {fileID: 667314312}
   fireflyMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   shineSpeed: 7
+  coulpingStrength: 2.2
+  couplingRange: 5
 --- !u!4 &373690786
 Transform:
   m_ObjectHideFlags: 0
@@ -381,6 +383,8 @@ MonoBehaviour:
   spread: 1
   noiseFrequency: 0.1
   noiseOffset: 2
+  motionFreq: 3
+  motionFreqOffset: 1
   playerInput: {fileID: 1814662793}
 --- !u!4 &667314313
 Transform:

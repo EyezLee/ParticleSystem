@@ -15,7 +15,7 @@ public class FireflyRender : MonoBehaviour
     // firefly effect properties
     [SerializeField] float shineSpeed;
     [Range(0, 5)]
-    [SerializeField] float coulpingStrength = 2;
+    [SerializeField] float couplingStrength = 2;
     [Range(1, 10)]
     [SerializeField] float couplingRange = 5;
 
@@ -69,7 +69,7 @@ public class FireflyRender : MonoBehaviour
             coherenceRad[i] = Mathf.Sqrt(sumX * sumX + sumY * sumY); // isn't it always going to be 1???
         }
     }
-
+    [SerializeField] bool deSync = false;
     void UpdateKaru()
     {
         Coherence();
@@ -79,7 +79,14 @@ public class FireflyRender : MonoBehaviour
             float theta = fireflyCopy[i].phase;
             float cphi = coherencePhi[i];
             float crad = coherenceRad[i];
-            theta += t * (coulpingStrength * crad * Mathf.Sin(cphi - theta) * toRadian);
+            if (!deSync)
+            {
+                theta += t * (couplingStrength * crad * Mathf.Sin(cphi - theta) * toRadian);
+            }
+            else
+            {
+                theta -= t * (couplingStrength * crad * Mathf.Sin(cphi - theta) * toRadian);
+            }
             theta -= (int)theta; // why???
             fireflyCopy[i].phase = theta;
         }

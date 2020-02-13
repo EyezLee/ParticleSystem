@@ -247,7 +247,7 @@ MonoBehaviour:
   fireflyManager: {fileID: 667314312}
   fireflyMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   shineSpeed: 7
-  coulpingStrength: 2.2
+  coulpingStrength: 5
   couplingRange: 5
 --- !u!4 &373690786
 Transform:

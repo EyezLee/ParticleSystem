@@ -87,5 +87,5 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
         FireflyBuffer[id.x].pos.y += safeStep;
     else if (p.y >= boundBox.w)      
         FireflyBuffer[id.x].pos.y -= safeStep;*/
-    FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel;
+    //FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel;
 }

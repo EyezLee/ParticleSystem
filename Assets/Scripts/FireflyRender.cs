@@ -123,7 +123,7 @@ public class FireflyRender : MonoBehaviour
         Graphics.DrawMeshInstancedIndirect(
             fireflyMesh, 0, rendMat,
             new Bounds(Vector3.zero, new Vector3(100.0f, 100.0f, 100.0f)), drawArgsBuffer
-            );    
+            );
     }
 
     private void OnDestroy()

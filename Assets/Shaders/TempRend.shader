@@ -58,13 +58,13 @@
 			float phase = FireflyBuffer[instance_id].phase;
 
 			// brightness control
-			float brightness = sin((phase + _Time.y) * _shineSpeed) / 2 + 0.5;
+			float brightness = sin((phase) *5) / 2 + 0.5;
 			
 			//o.color = float4(FireflyBuffer[instance_id].col * brightness);
 			o.color = float4(brightness, brightness, brightness, 1);
 			o.uv = TRANSFORM_TEX(v.uv, _MainTex); // uv
 
-			// Position
+			// position
 			float3 worldPos = FireflyBuffer[instance_id].pos;
 			
 			// vertices

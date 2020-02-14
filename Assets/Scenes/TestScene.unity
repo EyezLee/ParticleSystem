@@ -246,9 +246,11 @@ MonoBehaviour:
   fireflyTex: {fileID: 2800000, guid: 1b4aa44d9c6571242b7537ae62213f06, type: 3}
   fireflyManager: {fileID: 667314312}
   fireflyMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
-  shineSpeed: 7
-  coulpingStrength: 5
-  couplingRange: 5
+  shineSpeed: 1
+  speedOffset: 0.1
+  couplingStrength: 2.34
+  couplingRange: 3.29
+  isReset: 1
 --- !u!4 &373690786
 Transform:
   m_ObjectHideFlags: 0

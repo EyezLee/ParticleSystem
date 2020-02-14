@@ -12,12 +12,16 @@ public struct Firefly
 };
 public class FireflyManager : MonoBehaviour
 {
+    ComputeBuffer fireflyBuffer;
+
     // boundry setting 
     [SerializeField]
     int[] boundBox = { 0, 8, 0, 8 }; // minX maxX minY maxY
 
     public int fireflyCount = 10000;
     [SerializeField] ComputeShader fireflyCompute;
+
+    // firefly movement properties
     [SerializeField] int randomSeed = 4;
     [SerializeField] float stepWidth = 0.1f;
     [SerializeField] float spread = 1;
@@ -26,9 +30,23 @@ public class FireflyManager : MonoBehaviour
     [SerializeField] float motionFreq = 3;
     [SerializeField] float motionFreqOffset = 1;
 
+    // firefly shine-sync properties
+    [SerializeField] float shineSpeed;
+    [SerializeField] float shineRange;
+    [Range(0, 20)]
+    [SerializeField] float couplingStrength = 2;
+    [Range(1f, 10)]
+    [SerializeField] float couplingRange = 5;
+    [SerializeField] bool isReset = false;
+    Firefly[] fireflyCopy;
+    float[] coherencePhi; // ψ: average phase in coupling range for per fly
+    float[] coherenceRad; // r: 
+    float[] speed;
+    const float toRadian = 2 * Mathf.PI; // circle in radius
+    const float normRadian = 1 / toRadian;
+
     [SerializeField] Transform playerInput;
 
-    ComputeBuffer fireflyBuffer;
     uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
    
     int kThreadCount = 64;
@@ -38,22 +56,22 @@ public class FireflyManager : MonoBehaviour
     // init fireflies
     void InitFirefly()
     {
-        // set the kernel
-        var initKernel = fireflyCompute.FindKernel("PreSnycInit");
+        // set kernels
+        var initFirefly = fireflyCompute.FindKernel("FireflyInit");
         // allocate firefly buffer
         fireflyBuffer = new ComputeBuffer(fireflyCount, bufferStride);
         // pass variables to compute shader
         fireflyCompute.SetInt("randomSeed", randomSeed);
-        fireflyCompute.SetBuffer(initKernel, "FireflyBuffer", fireflyBuffer);
+        fireflyCompute.SetBuffer(initFirefly, "FireflyBuffer", fireflyBuffer);
         fireflyCompute.SetInts("boundBox", boundBox);
         // execute kernel
-        fireflyCompute.Dispatch(initKernel, threadGroupCount, 1, 1);
+        fireflyCompute.Dispatch(initFirefly, threadGroupCount, 1, 1);
     }
 
     // update fireflies
     void UpdateFirefly()
     {
-        var updateKernel = fireflyCompute.FindKernel("PreSnycUpdate");
+        var updateKernel = fireflyCompute.FindKernel("FireflyUpdate");
         // pass variables to compute shader
         fireflyCompute.SetFloat("deltaTime", Time.deltaTime);
         fireflyCompute.SetFloat("time", Time.time);
@@ -67,7 +85,33 @@ public class FireflyManager : MonoBehaviour
         // get cursor position
         float[] inputPos = { playerInput.position.x, playerInput.position.y};
         fireflyCompute.SetFloats("inputPos", inputPos);
+        // execute compute shader func
         fireflyCompute.Dispatch(updateKernel, threadGroupCount, 1, 1);
+    }
+
+    void ResetSync()
+    {
+        var resetSync = fireflyCompute.FindKernel("SyncReset");
+        fireflyCompute.SetFloat("time", Time.time);
+        fireflyCompute.SetBuffer(resetSync, "FireflyBuffer", fireflyBuffer);
+        fireflyCompute.Dispatch(resetSync, threadGroupCount, 1, 1);
+    }
+
+    void UpdateSync()
+    {
+        // update sync part
+        var updateSync = fireflyCompute.FindKernel("SyncUpdate");
+        // pass sync properties
+        fireflyCompute.SetBuffer(updateSync, "FireflyBuffer", fireflyBuffer);
+        fireflyCompute.SetFloat("coupling", couplingStrength);
+        fireflyCompute.SetFloat("couplingRange", couplingRange);
+        fireflyCompute.SetFloat("toRadian", toRadian);
+        fireflyCompute.SetFloat("normRadian", normRadian);
+        fireflyCompute.SetFloat("shineSpeed", shineSpeed);
+        fireflyCompute.SetFloat("shineRange", shineRange);
+        fireflyCompute.SetFloat("deltaTime", Time.deltaTime);
+        // execute compute shader func
+        fireflyCompute.Dispatch(updateSync, threadGroupCount, 1, 1);
     }
 
     public ComputeBuffer PassDataToRend()
@@ -78,15 +122,29 @@ public class FireflyManager : MonoBehaviour
     private void Awake()
     {
         InitFirefly();
+        ResetSync();
+
         PassDataToRend();
     }
     private void Update()
     {
         UpdateFirefly();
+        //if(isReset)
+        //{
+        //    isReset = false;
+        //    ResetSync();
+        //}
+        //UpdateSync();
+
         PassDataToRend();
     }
     private void OnDestroy()
     {
         fireflyBuffer.Release();
+    }
+
+    private void OnValidate()
+    {
+        isReset = true;
     }
 }

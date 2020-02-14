@@ -54,13 +54,9 @@
 		{
 			FB_INPUT o = (FB_INPUT)0;
 
-			// Color
+			// brightness
 			float phase = FireflyBuffer[instance_id].phase;
-
-			// brightness control
-			float brightness = sin((phase) *5) / 2 + 0.5;
-			
-			//o.color = float4(FireflyBuffer[instance_id].col * brightness);
+			float brightness = sin((phase) * 5) / 2 + 0.5;
 			o.color = float4(brightness, brightness, brightness, 1);
 			o.uv = TRANSFORM_TEX(v.uv, _MainTex); // uv
 

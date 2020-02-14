@@ -1,5 +1,7 @@
-﻿#pragma kernel PreSnycInit
-#pragma kernel PreSnycUpdate
+﻿#pragma kernel FireflyInit
+#pragma kernel FireflyUpdate
+#pragma kernel SyncReset
+#pragma kernel SyncUpdate
 
 #include "UnityCG.cginc"
 #include "SimplexNoise3D.cginc"
@@ -21,6 +23,12 @@ int randomSeed;
 float stepWidth, spread;
 float noiseFrequency, noiseOffset;
 float freq, freqOffset;
+int fireflyGroupSize;
+
+// karumoto model properties
+float coupling, couplingRange;
+const float toRadian, normRadian;
+float shineSpeed, shineRange;
 
 // boundry setting
 int4 boundBox;
@@ -41,7 +49,7 @@ float3 RandomPoint(float id)
 }
 
 [numthreads(256, 1, 1)]
-void PreSnycInit(uint id : SV_DispatchThreadID)
+void FireflyInit(uint id : SV_DispatchThreadID)
 {
      //scale position to fit screen
     float3 position = RandomPoint((float)id.x);
@@ -55,7 +63,7 @@ void PreSnycInit(uint id : SV_DispatchThreadID)
 }
 
 [numthreads(256, 1, 1)]
-void PreSnycUpdate(uint id : SV_DispatchThreadID) 
+void FireflyUpdate(uint id : SV_DispatchThreadID) 
 {
     float3 p = FireflyBuffer[id.x].pos; // origin pos 
     float3 seed = abs(p)+ float3(time, time, time); // prevent 0 velocity which will stuck particles
@@ -88,4 +96,49 @@ void PreSnycUpdate(uint id : SV_DispatchThreadID)
     else if (p.y >= boundBox.w)      
         FireflyBuffer[id.x].pos.y -= safeStep;*/
     //FireflyBuffer[id.x].pos += FireflyBuffer[id.x].vel;
+}
+
+// reset brightness
+[numthreads(256, 1, 1)]
+void SyncReset(uint id : SV_DispatchThreadID)
+{
+    FireflyBuffer[id.x].phase += Random(id.x + time, id.x + fmod(time * time, 10)) * 2;
+}
+
+// recalculate coherence 
+float2 Coherence(int idx)
+{
+    Firefly currfly = FireflyBuffer[idx];
+    float sumX = 0, sumY = 0;
+    int count = 0;
+    for (int i = 0; i < fireflyGroupSize; i++)
+    {
+        float dist = distance(currfly.pos, FireflyBuffer[i].pos);
+        if (dist < couplingRange && i != idx)
+        {
+            float theta = (FireflyBuffer[i].phase) * toRadian;
+            sumX += cos(theta);
+            sumY += sin(theta);
+            count++;
+        }
+    }
+    // average theta
+    sumX /= count;
+    sumY /= count;
+    float coherencePhi = atan2(sumY, sumX) * normRadian;
+    float coherenceRad = sqrt(sumX * sumX + sumY * sumY);
+    return float2(coherencePhi, coherenceRad);
+}
+
+// update brightness
+[numthreads(256, 1, 1)]
+void SyncUpdate(uint id : SV_DispatchThreadID)
+{
+    float theta = FireflyBuffer[id.x].phase;
+    float cphi = Coherence(id.x).x;
+    float crad = Coherence(id.x).y;
+    float speed = shineSpeed + shineRange * Random(id.x * 4 + time, fmod(id.x + time, 231));
+    theta += deltaTime * (speed + coupling * crad * sin((cphi - theta) * toRadian));
+    theta = frac(theta);
+    FireflyBuffer[id.x].phase = theta;
 }

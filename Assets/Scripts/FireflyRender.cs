@@ -24,7 +24,7 @@ public class FireflyRender : MonoBehaviour
         drawArgsBuffer = new ComputeBuffer(1, 5 * sizeof(uint), ComputeBufferType.IndirectArguments);
         drawArgsBuffer.SetData(new uint[5]
         {
-            fireflyMesh.GetIndexCount(0), (uint)fireflyManager.fireflyCount, 0, 0, 0
+            fireflyMesh.GetIndexCount(0), (uint)fireflyManager.FireflyCount, 0, 0, 0
         });
 
         rendMat.SetTexture("_MainTex", fireflyTex);

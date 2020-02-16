@@ -23,7 +23,7 @@ int randomSeed;
 float stepWidth, spread;
 float noiseFrequency, noiseOffset;
 float freq, freqOffset;
-int fireflyGroupSize;
+uint fireflyCount;
 
 // karumoto model properties
 float coupling, couplingRange;
@@ -105,40 +105,33 @@ void SyncReset(uint id : SV_DispatchThreadID)
     FireflyBuffer[id.x].phase += Random(id.x + time, id.x + fmod(time * time, 10)) * 2;
 }
 
-// recalculate coherence 
-float2 Coherence(int idx)
+// update brightness
+[numthreads(256, 1, 1)]
+void SyncUpdate(uint id : SV_DispatchThreadID)
 {
-    Firefly currfly = FireflyBuffer[idx];
+    float theta = FireflyBuffer[id.x].phase;
+
     float sumX = 0, sumY = 0;
     int count = 0;
-    for (int i = 0; i < fireflyGroupSize; i++)
+    for (uint i = 0; i < fireflyCount; i++)
     {
-        float dist = distance(currfly.pos, FireflyBuffer[i].pos);
-        if (dist < couplingRange && i != idx)
+        float dist = distance(FireflyBuffer[id.x].pos, FireflyBuffer[i].pos);
+        if (dist < couplingRange)
         {
-            float theta = (FireflyBuffer[i].phase) * toRadian;
-            sumX += cos(theta);
-            sumY += sin(theta);
+            float t = FireflyBuffer[i].phase * 6.283185; // to radian 6.283185
+            sumX += cos(t);
+            sumY += sin(t);
             count++;
         }
     }
     // average theta
     sumX /= count;
     sumY /= count;
-    float coherencePhi = atan2(sumY, sumX) * normRadian;
-    float coherenceRad = sqrt(sumX * sumX + sumY * sumY);
-    return float2(coherencePhi, coherenceRad);
-}
+    float cphi = atan2(sumY, sumX) * (1 / 6.283185); // normalize radian
+    float crad = sqrt(sumX * sumX + sumY * sumY);
 
-// update brightness
-[numthreads(256, 1, 1)]
-void SyncUpdate(uint id : SV_DispatchThreadID)
-{
-    float theta = FireflyBuffer[id.x].phase;
-    float cphi = Coherence(id.x).x;
-    float crad = Coherence(id.x).y;
     float speed = shineSpeed + shineRange * Random(id.x * 4 + time, fmod(id.x + time, 231));
-    theta += deltaTime * (speed + coupling * crad * sin((cphi - theta) * toRadian));
+    theta += deltaTime * (speed + coupling * crad * sin((cphi - theta) * 6.283185));
     theta = frac(theta);
     FireflyBuffer[id.x].phase = theta;
 }

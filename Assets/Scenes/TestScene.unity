@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boundBox: fdffffff03000000ffffffff01000000
-  fireflyCount: 100
+  _fireflyCount: 100
   fireflyCompute: {fileID: 7200000, guid: 77173ea66d0c2a542a3921a741a4bb41, type: 3}
   randomSeed: 1
   stepWidth: 0.2
@@ -384,7 +384,7 @@ MonoBehaviour:
   motionFreqOffset: 1
   shineSpeed: 1
   shineRange: 1
-  couplingStrength: 2
+  coupling: 2
   couplingRange: 5
   isReset: 1
   playerInput: {fileID: 1814662793}

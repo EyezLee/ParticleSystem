@@ -18,7 +18,12 @@ public class FireflyManager : MonoBehaviour
     [SerializeField]
     int[] boundBox = { 0, 8, 0, 8 }; // minX maxX minY maxY
 
-    public int fireflyCount = 10000;
+    [SerializeField] int _fireflyCount = 1000;
+    public int FireflyCount { get { return _fireflyCount; } }
+    uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
+    const int kThreadCount = 256;
+    int threadGroupCount { get { return Mathf.CeilToInt((float)_fireflyCount / kThreadCount); } }
+    int bufferStride = 48; // 4 * 12
     [SerializeField] ComputeShader fireflyCompute;
 
     // firefly movement properties
@@ -33,8 +38,8 @@ public class FireflyManager : MonoBehaviour
     // firefly shine-sync properties
     [SerializeField] float shineSpeed;
     [SerializeField] float shineRange;
-    [Range(0, 20)]
-    [SerializeField] float couplingStrength = 2;
+    [Range(0, 1)]
+    [SerializeField] float coupling = 2;
     [Range(1f, 10)]
     [SerializeField] float couplingRange = 5;
     [SerializeField] bool isReset = false;
@@ -42,16 +47,8 @@ public class FireflyManager : MonoBehaviour
     float[] coherencePhi; // ψ: average phase in coupling range for per fly
     float[] coherenceRad; // r: 
     float[] speed;
-    const float toRadian = 2 * Mathf.PI; // circle in radius
-    const float normRadian = 1 / toRadian;
 
     [SerializeField] Transform playerInput;
-
-    uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
-   
-    int kThreadCount = 64;
-    int threadGroupCount { get{ return Mathf.CeilToInt((float)fireflyCount / kThreadCount); } }
-    int bufferStride = 48; // 4 * 12
 
     // init fireflies
     void InitFirefly()
@@ -59,7 +56,7 @@ public class FireflyManager : MonoBehaviour
         // set kernels
         var initFirefly = fireflyCompute.FindKernel("FireflyInit");
         // allocate firefly buffer
-        fireflyBuffer = new ComputeBuffer(fireflyCount, bufferStride);
+        fireflyBuffer = new ComputeBuffer(FireflyCount, bufferStride);
         // pass variables to compute shader
         fireflyCompute.SetInt("randomSeed", randomSeed);
         fireflyCompute.SetBuffer(initFirefly, "FireflyBuffer", fireflyBuffer);
@@ -103,10 +100,9 @@ public class FireflyManager : MonoBehaviour
         var updateSync = fireflyCompute.FindKernel("SyncUpdate");
         // pass sync properties
         fireflyCompute.SetBuffer(updateSync, "FireflyBuffer", fireflyBuffer);
-        fireflyCompute.SetFloat("coupling", couplingStrength);
+        fireflyCompute.SetInt("fireflyCount", FireflyCount);
+        fireflyCompute.SetFloat("coupling", coupling);
         fireflyCompute.SetFloat("couplingRange", couplingRange);
-        fireflyCompute.SetFloat("toRadian", toRadian);
-        fireflyCompute.SetFloat("normRadian", normRadian);
         fireflyCompute.SetFloat("shineSpeed", shineSpeed);
         fireflyCompute.SetFloat("shineRange", shineRange);
         fireflyCompute.SetFloat("deltaTime", Time.deltaTime);
@@ -129,13 +125,12 @@ public class FireflyManager : MonoBehaviour
     private void Update()
     {
         UpdateFirefly();
-        //if(isReset)
-        //{
-        //    isReset = false;
-        //    ResetSync();
-        //}
-        //UpdateSync();
-
+        if (isReset)
+        {
+            isReset = false;
+            ResetSync();
+        }
+        UpdateSync();
         PassDataToRend();
     }
     private void OnDestroy()

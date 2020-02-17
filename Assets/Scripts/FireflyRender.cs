@@ -6,7 +6,6 @@ public class FireflyRender : MonoBehaviour
 {
     [SerializeField] Material rendMat;
     [SerializeField] Texture fireflyTex;
-    [SerializeField] FireflyManager fireflyManager;
     [SerializeField] Mesh fireflyMesh;
 
     ComputeBuffer fireflyBuffer;
@@ -14,8 +13,7 @@ public class FireflyRender : MonoBehaviour
 
     void GetFireflyBuffer()
     {
-        if(fireflyManager != null)
-            fireflyBuffer = fireflyManager.PassDataToRend();
+        fireflyBuffer = GameManager.GM.FM.PassDataToRend();
         rendMat.SetBuffer("FireflyBuffer", fireflyBuffer);
     }
     private void Start()
@@ -24,7 +22,7 @@ public class FireflyRender : MonoBehaviour
         drawArgsBuffer = new ComputeBuffer(1, 5 * sizeof(uint), ComputeBufferType.IndirectArguments);
         drawArgsBuffer.SetData(new uint[5]
         {
-            fireflyMesh.GetIndexCount(0), (uint)fireflyManager.FireflyCount, 0, 0, 0
+            fireflyMesh.GetIndexCount(0), (uint) GameManager.GM.FM.FireflyCount, 0, 0, 0
         });
 
         rendMat.SetTexture("_MainTex", fireflyTex);

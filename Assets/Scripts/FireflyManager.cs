@@ -16,7 +16,8 @@ public class FireflyManager : MonoBehaviour
 
     // boundry setting 
     [SerializeField]
-    int[] boundBox = { 0, 8, 0, 8 }; // minX maxX minY maxY
+    int[] _boundBox = { 0, 8, 0, 8 }; // minX maxX minY maxY
+    public int[] BoundBox { get { return _boundBox; } }
 
     [SerializeField] int _fireflyCount = 1000;
     public int FireflyCount { get { return _fireflyCount; } }
@@ -48,8 +49,6 @@ public class FireflyManager : MonoBehaviour
     float[] coherenceRad; // r: 
     float[] speed;
 
-    [SerializeField] Transform playerInput;
-
     // init fireflies
     void InitFirefly()
     {
@@ -60,7 +59,7 @@ public class FireflyManager : MonoBehaviour
         // pass variables to compute shader
         fireflyCompute.SetInt("randomSeed", randomSeed);
         fireflyCompute.SetBuffer(initFirefly, "FireflyBuffer", fireflyBuffer);
-        fireflyCompute.SetInts("boundBox", boundBox);
+        fireflyCompute.SetInts("boundBox", _boundBox);
         // execute kernel
         fireflyCompute.Dispatch(initFirefly, threadGroupCount, 1, 1);
     }
@@ -79,9 +78,7 @@ public class FireflyManager : MonoBehaviour
         fireflyCompute.SetFloat("noiseOffset", noiseOffset);
         fireflyCompute.SetFloat("freq", motionFreq);
         fireflyCompute.SetFloat("freqOffset", motionFreqOffset);
-        // get cursor position
-        float[] inputPos = { playerInput.position.x, playerInput.position.y};
-        fireflyCompute.SetFloats("inputPos", inputPos);
+
         // execute compute shader func
         fireflyCompute.Dispatch(updateKernel, threadGroupCount, 1, 1);
     }

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputManager : MonoBehaviour
+public class PlayerControl : MonoBehaviour
 {
     [SerializeField] int count;
     [SerializeField] GameObject player;
     
-    // interaction behaviors 
+    // ---------------------------interaction behaviors ----------------------------------
 
      // walk around to sync fireflies
     void Walk()

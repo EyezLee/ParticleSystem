@@ -22,8 +22,8 @@
 		#pragma target 5.0
 
 		struct Firefly {
-			float3 pos;
-			float3 vel;
+			float4 pos;
+			float4 vel;
 			float4 col;
 			float phase;
 			float scale;
@@ -39,7 +39,7 @@
 			float4 position : SV_POSITION;
 			float4 color : COLOR;
 			float brightness : BRIGHTNESS;
-			float3 vel : VEL;
+			float4 vel : VEL;
 			float scale : SCALE;
 			float2 uv : TEXCOORD0;
 		};
@@ -61,11 +61,11 @@
 			o.uv = TRANSFORM_TEX(v.uv, _MainTex); // uv
 
 			// position
-			float3 worldPos = FireflyBuffer[instance_id].pos;
+			float4 worldPos = FireflyBuffer[instance_id].pos;
 			
 			// vertices
 			o.position = UnityObjectToClipPos(
-				float4(v.vertex * FireflyBuffer[instance_id].scale + worldPos, 1));
+				float4(v.vertex * FireflyBuffer[instance_id].scale, 1) + worldPos);
 			return o;
 		}
 

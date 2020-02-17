@@ -8,8 +8,8 @@
 
 struct Firefly
 {
-    float3 pos;
-    float3 vel;
+    float4 pos;
+    float4 vel;
     float4 col;
     float phase;
     float scale;
@@ -52,12 +52,12 @@ float3 RandomPoint(float id)
 void FireflyInit(uint id : SV_DispatchThreadID)
 {
      //scale position to fit screen
-    float3 position = RandomPoint((float)id.x);
+    float4 position = float4(RandomPoint((float)id.x), 0);
     position.x *= (boundBox.y - boundBox.x);
     position.y *= (boundBox.w - boundBox.z);
     FireflyBuffer[id.x].pos = position;
     FireflyBuffer[id.x].col = float4(1, 1, 1, 1);
-    FireflyBuffer[id.x].vel = float3(0, 0, 0);
+    FireflyBuffer[id.x].vel = float4(0, 0, 0, 0);
     FireflyBuffer[id.x].phase = (Random(id.x, id.x + 0.1) + 0.5) * 10; // shift life
     FireflyBuffer[id.x].scale = max(0.1, (Random(id.x + 123.456, id.x +45.233) + 0.5) * 0.2);
 }
@@ -65,7 +65,7 @@ void FireflyInit(uint id : SV_DispatchThreadID)
 [numthreads(256, 1, 1)]
 void FireflyUpdate(uint id : SV_DispatchThreadID) 
 {
-    float3 p = FireflyBuffer[id.x].pos; // origin pos 
+    float4 p = FireflyBuffer[id.x].pos; // origin pos 
     float3 seed = abs(p)+ float3(time, time, time); // prevent 0 velocity which will stuck particles
     // divergence-free noise field
     float4 sn1 = snoise(seed * noiseFrequency);
@@ -82,7 +82,7 @@ void FireflyUpdate(uint id : SV_DispatchThreadID)
     //float diverseY = snoise(id.xyy).y;
     float3 velY = float3(0, sin(freq * time) * pow(sin(freqOffset * time), 6), 0) * normalize(snoise(p).xyz);
     // calculate velocity
-    FireflyBuffer[id.x].vel = velY + velXZ + randVel;
+    FireflyBuffer[id.x].vel = float4(velY + velXZ + randVel, 0);
     // set boundry
     /*float safeStep = stepWidth * 2;
     if (p.x > boundBox.x && p.x < boundBox.y && p.y > boundBox.z && p.y < boundBox.w)

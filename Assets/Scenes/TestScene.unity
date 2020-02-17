@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boundBox: fdffffff03000000ffffffff01000000
-  _fireflyCount: 100
+  _fireflyCount: 10000
   fireflyCompute: {fileID: 7200000, guid: 77173ea66d0c2a542a3921a741a4bb41, type: 3}
   randomSeed: 1
   stepWidth: 0.2

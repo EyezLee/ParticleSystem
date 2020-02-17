@@ -4,8 +4,8 @@ using UnityEngine;
 
 public struct Firefly
 {
-    public Vector3 pos;
-    public Vector3 vol;
+    public Vector4 pos;
+    public Vector4 vol;
     public Vector4 col;
     public float phase;
     public float scale;
@@ -23,7 +23,7 @@ public class FireflyManager : MonoBehaviour
     uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
     const int kThreadCount = 256;
     int threadGroupCount { get { return Mathf.CeilToInt((float)_fireflyCount / kThreadCount); } }
-    int bufferStride = 48; // 4 * 12
+    int bufferStride = 56; // 4 * 14
     [SerializeField] ComputeShader fireflyCompute;
 
     // firefly movement properties
@@ -138,6 +138,7 @@ public class FireflyManager : MonoBehaviour
         fireflyBuffer.Release();
     }
 
+    // player input driven
     private void OnValidate()
     {
         isReset = true;
